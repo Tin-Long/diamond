@@ -1,14 +1,16 @@
+from __future__ import annotations
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, TYPE_CHECKING, Tuple, Dict, Any
 
 import torch
 from torch import Tensor
 import torch.nn as nn
 import torch.nn.functional as F
 
-from data import Batch
+if TYPE_CHECKING:
+    from data import Batch
 from .inner_model import InnerModel, InnerModelConfig
-from utils import LossAndLogs
+LossAndLogs = Tuple[Tensor, Dict[str, Any]]
 
 
 def add_dims(input: Tensor, n: int) -> Tensor:
@@ -120,3 +122,17 @@ class Denoiser(nn.Module):
 
         loss /= seq_length
         return loss, {"loss_denoising": loss.detach()}
+
+    def cell_loss(self, history: Tensor, target: Tensor, condition: Tensor) -> Tensor:
+        """Original EDM target with clean cell-image history and continuous conditions."""
+        n = self.cfg.inner_model.num_steps_conditioning
+        if history.ndim != 5 or history.shape[1] != n or target.shape != history[:, 0].shape:
+            raise ValueError("Expected history [B,K,C,H,W] and target [B,C,H,W]")
+        if condition.shape != (history.shape[0], self.cfg.inner_model.cell_condition_dim):
+            raise ValueError("Cell condition dimension mismatch")
+        sigma = self.sample_sigma_training(target.shape[0], self.device)
+        noisy = self.apply_noise(target, sigma, self.cfg.sigma_offset_noise)
+        cs = self.compute_conditioners(sigma)
+        output = self.compute_model_output(noisy, history.flatten(1, 2), condition, cs)
+        edm_target = (target - cs.c_skip * noisy) / cs.c_out
+        return F.mse_loss(output, edm_target)

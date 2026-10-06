@@ -1,0 +1,46 @@
+{
+  "split_sha256": "cc70c3c19ba2c1f926b33ca28686bcea9fb71f9acf86c5b6ad100a99dd0fc866",
+  "index_sha256": "63c80097faf34fe9d529429bf4cd9cfa1902f18f63868047e5b235674c16aad6",
+  "gene_sha256": "3a859bf5d163e253c173b81294e4786feb01477b614ddb87c85d1e00895212ff",
+  "gene_dim": 200,
+  "fixed_track_counts": {
+    "train": 6571,
+    "test": 1642
+  },
+  "normalization": "uint8/255*2-1",
+  "sample_type": "single",
+  "gaps": "split into contiguous segments",
+  "gap_boundaries": 0,
+  "eligible_cell_counts": {
+    "train": 220492,
+    "test": 55691
+  },
+  "subsets": {
+    "train": {
+      "tracks": 6242,
+      "windows": 203068
+    },
+    "val": {
+      "tracks": 329,
+      "windows": 10853
+    },
+    "test": {
+      "tracks": 1642,
+      "windows": 54049
+    }
+  },
+  "history": 1,
+  "time_policy": {
+    "offset_h": 19.0,
+    "interval_h": 0.5,
+    "age": "source frame minus track start"
+  },
+  "verification": {
+    "unit_tests_passed": 8,
+    "real_cpu_train_batches": 1,
+    "real_cpu_validation_batches": 1,
+    "real_test_windows": 2,
+    "real_rollout_horizon": 2,
+    "full_gpu_training": false
+  }
+}

@@ -18,16 +18,24 @@ class InnerModelConfig:
     channels: List[int]
     attn_depths: List[bool]
     num_actions: Optional[int] = None
+    cell_condition_dim: Optional[int] = None
 
 
 class InnerModel(nn.Module):
     def __init__(self, cfg: InnerModelConfig) -> None:
         super().__init__()
         self.noise_emb = FourierFeatures(cfg.cond_channels)
-        self.act_emb = nn.Sequential(
-            nn.Embedding(cfg.num_actions, cfg.cond_channels // cfg.num_steps_conditioning),
-            nn.Flatten(),  # b t e -> b (t e)
-        )
+        if cfg.cell_condition_dim is None:
+            self.act_emb = nn.Sequential(
+                nn.Embedding(cfg.num_actions, cfg.cond_channels // cfg.num_steps_conditioning),
+                nn.Flatten(),
+            )
+        else:
+            self.act_emb = nn.Sequential(
+                nn.Linear(cfg.cell_condition_dim, cfg.cond_channels),
+                nn.SiLU(),
+                nn.Linear(cfg.cond_channels, cfg.cond_channels),
+            )
         self.cond_proj = nn.Sequential(
             nn.Linear(cfg.cond_channels, cfg.cond_channels),
             nn.SiLU(),

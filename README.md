@@ -1,3 +1,7 @@
+# MitoCheck cell trajectory adaptation
+
+服务器配置、轨迹筛选、训练和评估说明见 [docs/mitocheck.md](docs/mitocheck.md)。
+
 # Diffusion for World Modeling: Visual Details Matter in Atari (NeurIPS 2024 Spotlight)
 
 [**TL;DR**] 💎 DIAMOND (DIffusion As a Model Of eNvironment Dreams) is a reinforcement learning agent trained entirely in a diffusion world model.

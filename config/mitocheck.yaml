@@ -1,0 +1,58 @@
+defaults:
+  - _self_
+hydra:
+  run:
+    dir: outputs/mitocheck/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  job:
+    chdir: false
+mode: train
+output_dir: ${hydra:runtime.output_dir}
+checkpoint: null
+resume: null
+device: cuda
+seed: 0
+cpu_threads: 4
+dataset:
+  root: ${oc.env:MITOV2_ROOT,/work/tl441/mitov2}
+  expected_train: 6571
+  expected_test: 1642
+  history: 1
+  val_fraction: 0.05
+  interval: 0.5
+  offset: 19.0
+model:
+  cond_channels: 256
+  depths: [2,2,2,2]
+  channels: [64,64,64,64]
+  attn_depths: [0,0,0,0]
+  sigma_data: 0.5
+  sigma_offset_noise: 0.3
+sigma:
+  loc: -0.4
+  scale: 1.2
+  sigma_min: 0.002
+  sigma_max: 20.0
+sampler:
+  num_steps_denoising: 3
+  sigma_min: 0.002
+  sigma_max: 5.0
+  rho: 7
+  order: 1
+  s_churn: 0.0
+  s_tmin: 0.0
+  s_tmax: 100000.0
+  s_noise: 1.0
+training:
+  epochs: 100
+  batch_size: 32
+  workers: 4
+  lr: 0.0001
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  max_batches: null
+  val_batches: null
+  audit_samples: 8
+evaluation:
+  horizon: 10
+  max_windows: null
+  save_grids: 16
